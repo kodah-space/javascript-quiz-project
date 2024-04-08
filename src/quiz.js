@@ -43,12 +43,10 @@ class Quiz {
     }
   }
   filterQuestionsByDifficulty(difficulty) {
-    if (1 <= difficulty && difficulty <= 3) {
+    if (1 <= difficulty && difficulty <= 3 && typeof difficulty === "number") {
       this.questions = this.questions.filter((question) => {
         return question.difficulty === difficulty;
       });
-    } else {
-      return this.questions;
     }
   }
   averageDifficulty() {

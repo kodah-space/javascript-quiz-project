@@ -106,7 +106,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // 1. Show the question
     // Update the inner text of the question container element and show the question text
 
-    let questCountProgress = (questionCounter / questions.length) * 100;
+    let questCountProgress =
+      (quiz.currentQuestionIndex / quiz.questions.length) * 100;
     // 2. Update the green progress bar
     // Update the green progress bar (div#progressBar) width so that it shows the percentage of questions answered
 
@@ -129,15 +130,22 @@ document.addEventListener("DOMContentLoaded", () => {
     //    <label>${question.choices[i]}</label>`;
     // }
     console.log(question.choices);
-    question.choices.forEach((choice, index) => {
-      const choiceEl = document.createElement("li");
-      choiceContainer.appendChild(choiceEl);
-      choiceEl.innerHTML = `<input type="radio" name="choice" value=${choice}>
-     <label>${choice}</label>`;
+
+    question.choices.forEach((choice) => {
+      const radio = document.createElement("input");
+      radio.type = "radio";
+      radio.name = "choice";
+      radio.value = choice;
+      choiceContainer.appendChild(radio);
+
+      const radiolabel = document.createElement("label");
+      radiolabel.innerText = choice;
+      choiceContainer.appendChild(radiolabel);
+
+      const br = document.createElement("br");
+      choiceContainer.appendChild(br);
+      console.log(choiceContainer);
     });
-
-    console.log(choiceContainer);
-
     /* 
 
     
@@ -159,17 +167,17 @@ document.addEventListener("DOMContentLoaded", () => {
     //
     // 1. Get all the choice elements. You can use the `document.querySelectorAll()` method.
 
-    const allChoices = document.querySelectorAll('input[name="choice"]');
+    const choices = document.querySelectorAll("input[name=choice]");
 
-    console.log(allChoices);
+    console.log(choices);
 
-    // question.choices.forEach((choice) => {
-    //   if (choice.checked) {
-    //     selectedAnswer = choice.value;
-    //   }
-    // });
+    choices.forEach((choice) => {
+      if (choice.checked) {
+        selectedAnswer = choice.value;
+      }
+    });
 
-    // console.log(selectedAnswer);
+    console.log(selectedAnswer);
 
     // 2. Loop through all the choice elements and check which one is selected
     // Hint: Radio input elements have a property `.checked` (e.g., `element.checked`).
@@ -180,6 +188,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // Check if selected answer is correct by calling the quiz method `checkAnswer()` with the selected answer.
     // Move to the next question by calling the quiz method `moveToNextQuestion()`.
     // Show the next question by calling the function `showQuestion()`.
+
+    if (selectedAnswer) {
+      quiz.checkAnswer(selectedAnswer);
+      quiz.moveToNextQuestion();
+      showQuestion();
+    }
   }
 
   function showResults() {
@@ -192,6 +206,17 @@ document.addEventListener("DOMContentLoaded", () => {
     endView.style.display = "flex";
 
     // 3. Update the result container (div#result) inner text to show the number of correct answers out of total questions
-    resultContainer.innerText = `You scored 1 out of 1 correct answers!`; // This value is hardcoded as a placeholder
+    resultContainer.innerText = `You scored  ${quiz.correctAnswers} out of ${quiz.questions.length} correct answers!`; // This value is hardcoded as a placeholder
   }
+
+  const resetButton = document.querySelector("#restartButton");
+
+  resetButton.addEventListener("click", () => {
+    endView.style.display = "none";
+    quizView.style.display = "block";
+    quiz.currentQuestionIndex = 0;
+    quiz.correctAnswers = 0;
+    quiz.shuffleQuestions();
+    showQuestion();
+  });
 });
